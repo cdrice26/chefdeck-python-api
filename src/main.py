@@ -1,8 +1,7 @@
 from fastapi import FastAPI
+from routes.root import router as root_router
+from routes.scrape_recipe import router as scraper_router
 
 app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "You have reached the Cooky Python API."}
+app.include_router(root_router)
+app.include_router(scraper_router)
