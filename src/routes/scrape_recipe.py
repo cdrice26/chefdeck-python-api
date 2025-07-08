@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from models.recipe import Recipe
-from utils.recipe_scraper import RecipeScraper, WebpageBlockedError
+from services.recipe_scraper import RecipeScraper, WebpageBlockedError
 from urllib.parse import unquote
 from typing import Annotated
 from fastapi_simple_rate_limiter import rate_limiter  # type: ignore
