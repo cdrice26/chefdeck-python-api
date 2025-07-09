@@ -98,7 +98,7 @@ class Ingredient(BaseModel):
 
         def __init__(self, text: str):
             self.name = ""
-            self.amount = 0.0
+            self.amount = 1.0
             self.unit = "count"
             self._split_ingredient_str(text)
 
@@ -174,7 +174,7 @@ class Ingredient(BaseModel):
                     self.amount = (val1 + val2) / 2
                     unit_tokens = values[idx + 2 :]
                 except (IndexError, ValueError):
-                    self.amount = 0.0
+                    self.amount = 1.0
                     unit_tokens = []
             else:
                 # Sum all valid numerical values before first alpha token
