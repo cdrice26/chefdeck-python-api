@@ -7,6 +7,13 @@ from models.recipe import Recipe
 
 
 class RecipeScraper:
+    """
+    Utility class for scraping recipes with the recipe-scrapers library.
+
+    Parameters:
+        url (str): The url to scrape
+    """
+
     _url: str
     _can_scrape: bool
     _title: str
@@ -19,11 +26,22 @@ class RecipeScraper:
         self._url = url
         self._can_scrape = False
 
-    def is_allowed(self):
+    def is_allowed(self) -> bool:
+        """
+        Sets the can_scrape private property based on whether the provided url can be scraped and returns it.
+
+        Returns:
+            bool: Whether or not the provided URL can be scraped.
+        """
         robot_parser = RobotFileParserLookalike()
         self._can_scrape = robot_parser.can_fetch("cookybot", self._url)  # type: ignore
+        return self._can_scrape  # type: ignore
 
     def scrape_if_allowed(self):
+        """
+        Scrapes the recipe if the website's robots.txt allows scraping the page.
+        Data is stored internally and can be fetched with get_as_recipe().
+        """
         self.is_allowed()
         if not self._can_scrape:
             raise WebpageBlockedError()
@@ -37,6 +55,12 @@ class RecipeScraper:
         self._directions = scraper.instructions_list()
 
     def get_as_recipe(self):
+        """
+        Returns the scraped recipe (if it exists) as a Recipe model instance.
+
+        Returns:
+            Recipe: The scraped recipe
+        """
         return Recipe(
             title=self._title,
             servings=int(self._servings),

@@ -29,6 +29,7 @@ terms = [
     "tbsps",
     "gal",
     "gals",
+    "count",
 ]
 
 intermediate_words = ["to", "about"]
@@ -66,16 +67,35 @@ def replace_fractions(text: str) -> str:
 
 
 class Ingredient(BaseModel):
+    """
+    Representation of an Ingredient.
+
+    Properties:
+        name (str): Name of ingredient
+        amount (float): Amount of the ingredient required
+        unit (str): Unit the amount is measured in
+    """
+
     name: str
     amount: float
     unit: str
 
     @classmethod
     def from_string(cls, text: str) -> "Ingredient":
+        """
+        Create an Ingredient instance from a string of the format {amount} {unit} {name}
+        """
         parser = cls._Parser(text)
         return cls(name=parser.name, amount=parser.amount, unit=parser.unit)
 
     class _Parser:
+        """
+        Inner class for parsing an Ingredient from a string.
+
+        Parameters:
+                text (str): The text to parse
+        """
+
         def __init__(self, text: str):
             self.name = ""
             self.amount = 0.0
@@ -83,6 +103,12 @@ class Ingredient(BaseModel):
             self._split_ingredient_str(text)
 
         def _split_ingredient_str(self, text: str):
+            """
+            Split the ingredient string into the three parts, the name, amount, and unit
+
+            Parameters:
+                text (str): The ingredient string to parse
+            """
             words = text.split(" ")
             count_field = ""
             current_word = words[0]
@@ -101,6 +127,12 @@ class Ingredient(BaseModel):
             self._parse_measurement(count_field)
 
         def _parse_measurement(self, s: str):
+            """
+            Split the measurement field into amount and unit and remove fractions, converting to floats
+
+            Parameters:
+                s (str): The measurement field string to parse
+            """
             s = replace_fractions(s)
             s = s.replace("-", " to ")  # normalize dashes
 

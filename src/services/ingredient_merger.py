@@ -12,6 +12,15 @@ lemmatizer = WordNetLemmatizer()
 
 
 def singularize(word: str) -> str:
+    """
+    Converts a potentially plural word to its singluar form, assuming it follows standard grammar.
+
+    Parameters:
+        word (str): The potentially plural word to stem
+
+    Returns:
+        str: The singluar form of the word
+    """
     if word.endswith("ies") and len(word) > 3:
         return word[:-3] + "y"
     elif word.endswith("es") and len(word) > 2:
@@ -22,6 +31,15 @@ def singularize(word: str) -> str:
 
 
 def lemmatize(name: str) -> str:
+    """
+    Uses NLTK POS tagging and lemmatization to return the root form of a word.
+
+    Parameters:
+        name (str): The word to lemmatize
+
+    Returns:
+        str: The root form of the word
+    """
     pos_tagged = pos_tag(name.split())  # type: ignore
     lemmatized_name = " ".join(
         lemmatizer.lemmatize(singularize(word), pos="n" if tag.startswith("N") else "v") for word, tag in pos_tagged  # type: ignore
@@ -30,14 +48,30 @@ def lemmatize(name: str) -> str:
 
 
 class IngredientMerger:
+    """
+    Utility class for merging like ingredients.
+
+    Parameters:
+        ingredients (list[Ingredient]): The list of ingredients that may contain like ingredients
+    """
+
     def __init__(self, ingredients: list[Ingredient]):
         self._ingredients = ingredients
 
     @property
     def ingredients(self):
+        """
+        Returns the list of ingredients. Make sure to call merge() first to merge like ingredients.
+
+        Returns:
+            list[Ingredient]: The list of ingredients stored by the class
+        """
         return self._ingredients
 
     def merge(self):
+        """
+        Merge the like ingredients in the class.
+        """
         combined_ingredients: dict[str, dict[str, Quantity]] = {}
 
         for ingredient in self._ingredients:
