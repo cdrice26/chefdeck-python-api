@@ -10,4 +10,4 @@ class RootResponse(BaseModel):
 
 @router.get("/")
 async def root() -> RootResponse:
-    return RootResponse(message="You have reached the Cooky Python API.")
+    return RootResponse(message="You have reached the ChefDeck Python API.")
