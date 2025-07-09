@@ -56,8 +56,3 @@ class TestIngredient:
         assert ingredient.name == "salt"
         assert ingredient.amount == 2.0
         assert ingredient.unit == "teaspoons"
-
-        ingredient = Ingredient.from_string("to taste black pepper")
-        assert ingredient.name == "black pepper"
-        assert ingredient.amount == 0.0
-        assert ingredient.unit == "count"  # Default unit

@@ -109,7 +109,11 @@ class Ingredient(BaseModel):
             Parameters:
                 text (str): The ingredient string to parse
             """
+            text = replace_fractions(text)
+            text = text.replace("-", " to ")
+            text = text.replace("about ", "")
             words = text.split(" ")
+            print(words)
             count_field = ""
             current_word = words[0]
             while (
