@@ -8,7 +8,10 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/main.py"
+      "dest": "/src/main.py"
     }
-  ]
+  ],
+  "env": {
+    "APP_MODULE": "main:app"
+  }
 }
