@@ -1,4 +1,4 @@
-from pint import DimensionalityError, Quantity, UnitRegistry
+from pint import DimensionalityError, Quantity, UndefinedUnitError, UnitRegistry
 from errors.invalid_ingredients_error import InvalidIngredientsError
 from models.ingredient import Ingredient
 from nltk.stem import WordNetLemmatizer  # type: ignore
@@ -47,6 +47,26 @@ def lemmatize(name: str) -> str:
     return lemmatized_name
 
 
+class CustomQuantity:
+    def __init__(self, amount: float, unit: str):
+        self.amount = amount
+        self.unit = unit
+
+    def __add__(self, other: "CustomQuantity | Quantity"):
+        if self.unit == other.unit:
+            return CustomQuantity(self.amount + other.amount, self.unit)
+        else:
+            raise DimensionalityError(self.unit, other.unit)
+
+    @property
+    def magnitude(self):
+        return self.amount
+
+    @property
+    def units(self):
+        return self.unit
+
+
 class IngredientMerger:
     """
     Utility class for merging like ingredients.
@@ -72,7 +92,7 @@ class IngredientMerger:
         """
         Merge the like ingredients in the class.
         """
-        combined_ingredients: dict[str, dict[str, Quantity]] = {}
+        combined_ingredients: dict[str, dict[str, Quantity | CustomQuantity]] = {}
 
         for ingredient in self._ingredients:
             try:
@@ -85,7 +105,11 @@ class IngredientMerger:
                 # Get the POS tag for the name
                 lemmatized_name = lemmatize(name)
 
-                quantity = amount * ureg(unit)
+                quantity = None
+                try:
+                    quantity = amount * ureg(unit)
+                except UndefinedUnitError:
+                    quantity = CustomQuantity(amount, unit)
 
                 if lemmatized_name in combined_ingredients:
                     existing_quantity = combined_ingredients[lemmatized_name][
@@ -93,7 +117,9 @@ class IngredientMerger:
                     ]
                     try:
                         new_quantity = existing_quantity + quantity
-                        if isinstance(new_quantity, Quantity):
+                        if isinstance(new_quantity, Quantity) or isinstance(
+                            new_quantity, CustomQuantity
+                        ):
                             combined_ingredients[lemmatized_name][
                                 "quantity"
                             ] = new_quantity

@@ -53,6 +53,32 @@ def test_ingredient_merger():
     )  # 0.5 kg + 1 g = 0.501 kg (should be converted correctly)
 
 
+def test_ingredient_merger_invalid_units():
+    # Create some mock ingredients
+    ingredient1 = Ingredient(name="Tomato", amount=2, unit="nothings")
+    ingredient2 = Ingredient(name="Tomatoes", amount=1, unit="foo")
+    ingredient3 = Ingredient(name="Onion", amount=0.5, unit="buzz")
+    ingredient4 = Ingredient(name="Onions", amount=1, unit="buzz")
+
+    ingredients = [ingredient1, ingredient2, ingredient3, ingredient4]
+    merger = IngredientMerger(ingredients)
+
+    # Perform the merge
+    merger.merge()
+
+    # Check the merged ingredients
+    merged_ingredients = merger.ingredients
+
+    # Check if the tomatoes are merged correctly
+    assert len(merged_ingredients) == 3  # Should be 3 unique ingredients after merging
+    assert merged_ingredients[0].name == "Tomato"  # Check for the first ingredient
+    assert merged_ingredients[0].amount == 2
+    assert merged_ingredients[1].name.startswith("Tomato")
+    assert merged_ingredients[1].amount == 1
+    assert merged_ingredients[2].name == "Onion"  # Check for the second ingredient
+    assert merged_ingredients[2].amount == 1.5
+
+
 # Run the tests
 if __name__ == "__main__":
     pytest.main()
