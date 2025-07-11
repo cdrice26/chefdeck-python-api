@@ -4,6 +4,7 @@ import requests
 from errors.webpage_blocked_error import WebpageBlockedError
 from models.ingredient import Ingredient
 from models.recipe import Recipe
+import os
 
 
 class RecipeScraper:
@@ -21,10 +22,13 @@ class RecipeScraper:
     _servings: int
     _ingredients: list[str]
     _directions: list[str]
+    _user_agent: str
 
     def __init__(self, url: str) -> None:
         self._url = url
         self._can_scrape = False
+        ua_env_var = os.getenv("USER_AGENT")
+        self._user_agent = "chefdeckdemo" if ua_env_var is None else ua_env_var
 
     def is_allowed(self) -> bool:
         """
@@ -34,7 +38,7 @@ class RecipeScraper:
             bool: Whether or not the provided URL can be scraped.
         """
         robot_parser = RobotFileParserLookalike()
-        self._can_scrape = robot_parser.can_fetch("cookybot", self._url)  # type: ignore
+        self._can_scrape = robot_parser.can_fetch(self._user_agent, self._url)  # type: ignore
         return self._can_scrape  # type: ignore
 
     def scrape_if_allowed(self):
@@ -45,7 +49,9 @@ class RecipeScraper:
         self.is_allowed()
         if not self._can_scrape:
             raise WebpageBlockedError()
-        html: str = requests.get(self._url, headers={"User-Agent": "cookybot"}).text
+        html: str = requests.get(
+            self._url, headers={"User-Agent": self._user_agent}
+        ).text
         scraper = scrape_html(html, org_url=self._url)
         self._title = scraper.title()
         self._minutes = scraper.total_time()
