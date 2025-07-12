@@ -57,4 +57,7 @@ Make sure to have `pytest` installed in your environment.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Note that third party libraries are bundled with the final project, and remain under their respective licenses - see [third_party_licenses](third_party_licenses) for details. 
+
+Ingredient merging uses WordNet, a registered trademark of Princeton University.
+Princeton University "About WordNet." WordNet. Princeton University. 2010. 
